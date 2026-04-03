@@ -36,6 +36,16 @@ export async function detectDisease(base64Image) {
 function parseResult(data) {
   console.log("FULL API DATA:", JSON.stringify(data, null, 2));
 
+  // ✅ Plant কিনা check করো
+  const classificationSuggestions = data.result?.classification?.suggestions || [];
+  const topSuggestion = classificationSuggestions[0];
+  const isPlant = topSuggestion?.probability > 0.1; // ১০% এর কম হলে plant না
+
+  // Plant না হলে error throw করো
+  if (!isPlant || classificationSuggestions.length === 0) {
+    throw new Error("NOT_A_PLANT");
+  }
+
   const isHealthy = data.result?.is_healthy?.binary ?? true;
   const healthProbability = data.result?.is_healthy?.probability ?? 1;
 
@@ -49,20 +59,17 @@ function parseResult(data) {
       treatment: d.details?.treatment || null,
     }));
 
-  // Plant name এখন এখান থেকে আসবে
-  const plantSuggestion = data.result?.classification?.suggestions?.[0];
-  const commonNames = plantSuggestion?.details?.common_names;
-  
+  const commonNames = topSuggestion?.details?.common_names;
   const plantName =
     (commonNames && commonNames.length > 0 ? commonNames[0] : null) ||
-    plantSuggestion?.name ||
-    "সনাক্ত হয়নি";
+    topSuggestion?.name ||
+    "Unknown Plant";
 
   return {
     isHealthy,
     healthScore: Math.round(healthProbability * 100),
     diseases,
     plantName,
-    plantProbability: Math.round((plantSuggestion?.probability || 0) * 100),
+    plantProbability: Math.round((topSuggestion?.probability || 0) * 100),
   };
 }
