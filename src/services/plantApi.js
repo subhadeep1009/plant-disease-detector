@@ -37,7 +37,7 @@ function parseResult(data) {
   // Check if the image is a valid plant image or not
   const classificationSuggestions = data.result?.classification?.suggestions || [];
   const topSuggestion = classificationSuggestions[0];
-  const isPlant = topSuggestion?.probability > 0.3; // If probability<30%, not a plant
+  const isPlant = topSuggestion?.probability > 0.2; // If probability<20%, not a plant
 
   // Throw error if not a plant image
   if (!isPlant || classificationSuggestions.length === 0) {
