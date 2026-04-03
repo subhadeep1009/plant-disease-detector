@@ -1,14 +1,12 @@
-// =============================================
-// 🌿 Plant.id API Service
+// Plant.id API Service
 // =============================================
 
-// ⭐ এখানে তোমার API key বসাও
 const API_KEY = "gE3hVu25iHN5ErhEtR71EqSdV3CWFxZXzCIyZQvHAa8102lzeT";
 
 const API_URL = "https://plant.id/api/v3/identification?details=common_names,description,treatment,cause&language=en";
 
 export async function detectDisease(base64Image) {
-  // base64 string থেকে শুধু data অংশ নাও
+  // take data part from base64 string 
   const imageData = base64Image.replace(/^data:image\/[a-z]+;base64,/, "");
 
   const response = await fetch(API_URL, {
@@ -36,12 +34,12 @@ export async function detectDisease(base64Image) {
 function parseResult(data) {
   console.log("FULL API DATA:", JSON.stringify(data, null, 2));
 
-  // ✅ Plant কিনা check করো
+  // Check if the image is a valid plant image or not
   const classificationSuggestions = data.result?.classification?.suggestions || [];
   const topSuggestion = classificationSuggestions[0];
-  const isPlant = topSuggestion?.probability > 0.1; // ১০% এর কম হলে plant না
+  const isPlant = topSuggestion?.probability > 0.1; // If probability<10, not a plant
 
-  // Plant না হলে error throw করো
+  // Throw error if not a plant image
   if (!isPlant || classificationSuggestions.length === 0) {
     throw new Error("NOT_A_PLANT");
   }
