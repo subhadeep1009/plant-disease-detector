@@ -1,12 +1,13 @@
 // Plant.id API Service
 // =============================================
 
-const API_KEY = "gE3hVu25iHN5ErhEtR71EqSdV3CWFxZXzCIyZQvHAa8102lzeT";
+const API_KEY = "8HnwSNgQtgQ2L98XNRz10TuGVjxggzlFxM9wIVUt4Pxoww1gFY";
 
-const API_URL = "https://plant.id/api/v3/identification?details=common_names,description,treatment,cause&language=en";
+const API_URL =
+  "https://plant.id/api/v3/identification?details=common_names,description,treatment,cause&language=en";
 
 export async function detectDisease(base64Image) {
-  // take data part from base64 string 
+  // take data part from base64 string
   const imageData = base64Image.replace(/^data:image\/[a-z]+;base64,/, "");
 
   const response = await fetch(API_URL, {
@@ -35,12 +36,15 @@ function parseResult(data) {
   console.log("FULL API DATA:", JSON.stringify(data, null, 2));
 
   // Check if the image is a valid plant image or not
-  const classificationSuggestions = data.result?.classification?.suggestions || [];
+  const classificationSuggestions =
+    data.result?.classification?.suggestions || [];
   const topSuggestion = classificationSuggestions[0];
-  const isPlant = topSuggestion?.probability > 0.2; // If probability<20%, not a plant
 
-  // Throw error if not a plant image
-  if (!isPlant || classificationSuggestions.length === 0) {
+  const isPlantScore = data.result?.is_plant?.probability ?? 0;
+  const isPlantBinary = data.result?.is_plant?.binary ?? false;
+
+  // if is_plant binary false or probability <20% reject
+  if (!isPlantBinary || isPlantScore < 0.2) {
     throw new Error("NOT_A_PLANT");
   }
 
