@@ -1,7 +1,7 @@
 // Plant.id API Service
 // =============================================
 
-const API_KEY = "8HnwSNgQtgQ2L98XNRz10TuGVjxggzlFxM9wIVUt4Pxoww1gFY";
+const API_KEY = import.meta.env.VITE_API_KEY;
 
 const API_URL =
   "https://plant.id/api/v3/identification?details=common_names,description,treatment,cause&language=en";
